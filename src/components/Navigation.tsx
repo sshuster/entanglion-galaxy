@@ -3,11 +3,15 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { UserCircle, LogOut } from 'lucide-react';
 
 export const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, logout } = useAuth();
   
   const links = [
     { name: 'Home', path: '/' },
@@ -51,6 +55,14 @@ export const Navigation = () => {
         ease: 'easeOut'
       } 
     })
+  };
+  
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
   
   return (
@@ -97,6 +109,30 @@ export const Navigation = () => {
               </Link>
             </motion.div>
           ))}
+          
+          <div className="flex items-center space-x-4">
+            {user ? (
+              <>
+                <div className="flex items-center gap-2">
+                  <UserCircle className="h-5 w-5" />
+                  <span className="text-sm font-medium">{user.username}</span>
+                </div>
+                <Button variant="ghost" size="sm" onClick={handleLogout} className="text-sm">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="ghost" size="sm" className="text-sm">Login</Button>
+                </Link>
+                <Link to="/register">
+                  <Button variant="default" size="sm" className="text-sm">Register</Button>
+                </Link>
+              </>
+            )}
+          </div>
         </nav>
         
         {/* Mobile Menu Button */}
@@ -149,6 +185,28 @@ export const Navigation = () => {
                 )}
               </Link>
             ))}
+            
+            {user ? (
+              <div className="flex flex-col items-center space-y-4 mt-6">
+                <div className="flex items-center gap-2">
+                  <UserCircle className="h-5 w-5" />
+                  <span className="text-sm font-medium">{user.username}</span>
+                </div>
+                <Button variant="ghost" onClick={handleLogout} className="text-sm">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center space-y-4 mt-6">
+                <Link to="/login" className="w-full">
+                  <Button variant="ghost" className="w-full">Login</Button>
+                </Link>
+                <Link to="/register" className="w-full">
+                  <Button variant="default" className="w-full">Register</Button>
+                </Link>
+              </div>
+            )}
           </nav>
         </motion.div>
       </div>
