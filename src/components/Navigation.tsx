@@ -155,5 +155,3 @@ export const Navigation = () => {
     </motion.header>
   );
 };
-
-<lov-add-dependency>framer-motion@latest</lov-add-dependency>
